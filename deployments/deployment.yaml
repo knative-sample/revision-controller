@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: revision-controller
+  namespace: knative-serving
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: revisoin-controller
+  template:
+    metadata:
+      labels:
+        app: revisoin-controller
+    spec:
+      serviceAccountName: revision-controller
+      containers:
+      - name: controller
+        env:
+        - name: SYSTEM_NAMESPACE
+          value: "knative-serving"
+        - name: METRICS_DOMAIN
+          value: "knative.dev/custom/controller"
+        - name: CONFIG_LOGGING_NAME
+          value: "config-logging"
+        - name: CONFIG_OBSERVABILITY_NAME
+          value: "config-observability"
+        image: registry.cn-hangzhou.aliyuncs.com/knative-sample/revision-controller:master_c37794b9-20190827204058
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1000Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
